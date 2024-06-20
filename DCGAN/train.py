@@ -56,7 +56,7 @@ def train_gan(args):
 	optimizerD = optim.Adam(netD.parameters(), lr=args.lr, betas=(args.beta1, 0.999))
 
 	# For input of generator in testing
-	fixed_noise = torch.randn(64, args.nz, 1, 1, device=device)
+	fixed_noise = torch.randn(1024, args.nz, 1, 1, device=device)
 
 	# convention for training
 	real_label = 1.0
