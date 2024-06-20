@@ -12,16 +12,22 @@ def generate_images(args):
 		else 'cpu')
 
 	# load generator model
-	netG = Generator(args).to(device)
-	netG.load_state_dict(torch.load(args.netG))
+        print('[+] Loading model... ')
+        netG = Generator(args).to(device)
+        netG.load_state_dict(torch.load(args.netG, map_location=device))
 
-	# create random noise
-	noise = torch.randn(args.n, args.nz, 1, 1, device=device)
-	fake = netG(noise).detach().cpu()
-	img = vutils.make_grid(fake, padding=2, normalize=True)
+        print('[+] Creating noise... ')
+        # create random noise
+        noise = torch.randn(args.n, args.nz, 1, 1, device=device)
 
-	# save image
-	plt.axis("off")
-	plt.imshow(np.transpose(img,(1,2,0)))
-	plt.savefig(args.output_path)
+        print('[+] Generating image... ')
+        fake = netG(noise).detach().cpu()
 
+        # resize images to 256x256
+        fake = F.interpolate(fake, size=(1080, 1080), mode='bilinear', align_corners=True)
+
+        # save image
+        img = vutils.make_grid(fake, padding=2, normalize=True)
+        plt.axis("off")
+        plt.imshow(np.transpose(img,(1,2,0)))
+        plt.savefig(args.output_path)
